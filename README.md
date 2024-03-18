@@ -1,6 +1,6 @@
 # DockLunch
 
-**simple** python app to run **docker container** for ctf challenge
+**simple** python app to run **docker container** for ctf challenges
 
 # Installation
 ```bash
