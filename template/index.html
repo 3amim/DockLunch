@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>
+            Lunch
+        </title>
+        <style>
+            @import url("https://fonts.googleapis.com/css?family=Roboto:400,400i,700");
+
+
+:root {
+  --font-size: 5rem;
+  --color: #c8c8c8;
+  --color-secondary: #4b4c52;
+  --background-color: #020202;
+  --background-color-secondary: #373785;
+}
+
+body {
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  padding: 3rem;
+  box-sizing: border-box;
+  gap: 2rem;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  background: var(--background-color);
+  color: var(--color);
+  font-family: "Open Sans", sans-serif;
+}
+
+div {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+a{
+  color: #43cb8e;
+}
+
+input {
+  width: 20rem;
+  height: 2rem;
+  padding: 0.8rem 1.2rem;
+  font-size: var(--font-size);
+  border-radius: 0.4rem;
+  border: 2px solid var(--color);
+  background: var(--background-color);
+  color: inherit
+}
+
+label {
+  position: absolute;
+  left: 1.2rem;
+  font-size: var(--font-size);
+  text-transform: uppercase;
+  transform-origin: left center;
+  background: white;
+  pointer-events: none;
+  background: transparent;
+  transition: transform 0.2s ease-out;
+  color: rgba(240, 240, 240, 0.4);
+  border-radius: 0.2rem;
+}
+
+:is(input:focus, input:valid) {
+  outline: none;
+  border-color: var(--color-secondary);
+  background: var(--background-color-secondary);
+}
+
+:is(input:focus, input:valid) + label {
+  transition: 0.2s ease-out;
+  padding: 0.2rem 0.8rem;
+  transform: translateY(-1.8rem) scale(0.7);
+  color: var(--background-color);
+  background: var(--color-secondary);
+}
+span{
+  font-size: 2rem;
+}
+
+button{
+  outline: 0;
+  border: 0;
+  cursor: pointer;
+  background: #43cb8e;
+  color: #FFFFFF;
+  border-radius: 8px;
+  padding: 14px 150px 16px;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1;
+  transition: transform 200ms,background 200ms;
+  :hover{
+    transform: translateY(-2px);
+  }
+}
+                
+
+        </style>
+    </head>
+    <body class="body">
+        <div class="div">
+            {% if data is defined %}
+                <span>Name: {{data['name']}}</span>
+                <br>
+                <span>Server: <a href="{{data['server']}}" target="_blank">{{data['server']}}</a></span>
+                <br>
+                <span>Discription: {{data['dis']}}</span>
+                <br>
+                <span>time : <span id="time"></span></span>
+                
+            {% else %}
+                {{e}}
+            {% endif %}
+        </div>
+        <div id="time"></div>
+        <form method="post">
+            <button class="button" , type="submit">Lunch</button>
+        </form>
+        
+    </body>
+    <script type="text/javascript">
+      function startCountdown(timeInSeconds) {
+    var interval = setInterval(function() {
+        var hours = Math.floor(timeInSeconds / 3600);
+        var minutes = Math.floor((timeInSeconds % 3600) / 60);
+        var seconds = timeInSeconds % 60;
+
+        document.getElementById("time").innerText = hours + ":" + minutes +
+":" + seconds;
+
+        if (timeInSeconds <= 0) {
+            clearInterval(interval);
+            document.getElementById("time").innerText = "Expierd";
+            document.location = document.location
+        } else {
+            timeInSeconds--;
+        }
+    }, 1000);
+}
+
+
+
+{% if data is defined %}
+  var timeInSeconds = {{data['time']}};
+  startCountdown(timeInSeconds);
+{%endif%}
+    </script>
+</html>

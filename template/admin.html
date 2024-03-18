@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>SB Admin 2 - Dashboard</title>
+
+    <!-- Custom fonts for this template-->
+    <link href="static/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+    <link
+        href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
+        rel="stylesheet">
+
+    <!-- Custom styles for this template-->
+    <link href="static/css/sb-admin-2.min.css" rel="stylesheet">
+
+</head>
+
+<body id="page-top">
+
+    <!-- Page Wrapper -->
+    <div id="wrapper">
+
+        <!-- Sidebar -->
+        
+        <!-- End of Sidebar -->
+
+        <!-- Content Wrapper -->
+        <div id="content-wrapper" class="d-flex flex-column">
+
+            <!-- Main Content -->
+            <div id="content">
+
+                <!-- Topbar -->
+
+                <!-- End of Topbar -->
+
+                <!-- Begin Page Content -->
+                <div class="container-fluid">
+
+                    <!-- Page Heading -->
+                    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                        <h1 class="h3 mb-0 text-gray-800">Dashboard</h1>
+                    </div>
+                    <!-- Content Row -->
+                    <div class="row">
+
+                        <!-- Earnings (Monthly) Card Example -->
+                        <div class="col-xl-3 col-md-6 mb-4">
+                            <div class="card border-left-info shadow h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                                Total Images</div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{info['total']}}</div>
+                                        </div>
+                                        <div class="col-auto">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Earnings (Monthly) Card Example -->
+                        <div class="col-xl-3 col-md-6 mb-4">
+                            <div class="card border-left-success shadow h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                                Containers UP</div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{info['up']}}</div>
+                                        </div>
+                                        <div class="col-auto">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Earnings (Monthly) Card Example -->
+                        <div class="col-xl-3 col-md-6 mb-4">
+                            <div class="card border-left-primary shadow h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Containers Lunch
+                                            </div>
+                                            <div class="row no-gutters align-items-center">
+                                                <div class="col-auto">
+                                                    <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">{{info['lunch']}}</div>
+                                                </div>
+                                                <div class="col-auto">
+                                                    
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-auto">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Pending Requests Card Example -->
+                        <div class="col-xl-3 col-md-6 mb-4">
+                            <div class="card border-left-danger shadow h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">
+                                                Total kill containers</div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{info['kills']}}</div>
+                                        </div>
+                                        <div class="col-auto">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Content Row -->
+
+                    <div class="row">
+
+                        <!-- Area Chart -->
+                        <div class="col-xl-8 col-lg-7">
+                            <div class="card shadow mb-4">
+                                <!-- Card Header - Dropdown -->
+                                <div
+                                    class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                                    <h6 class="m-0 font-weight-bold text-primary">Containers Stats</h6>
+                                    <div class="dropdown no-arrow">
+                                        <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
+                                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        </a>
+                                        <div class="   animated--fade-in"
+                                            aria-labelledby="dropdownMenuLink">
+                                            <select class="form-select" aria-label="Default select example" id="select">
+                                                <option selected value="cpu">CPU</option>
+                                                <option value="memory">MEMORY</option>
+                                                <option value="net">NET I/O</option>
+                                              </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Card Body -->
+                                <div class="card-body">
+                                    <div class="chart-area">
+                                        <div id="myChart" style="height: 300px; width:100%;"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Pie Chart -->
+                        <div class="col-xl-4 col-lg-5">
+                            <div class="card shadow mb-4">
+                                <!-- Card Header - Dropdown -->
+                                <div
+                                    class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                                    <h6 class="m-0 font-weight-bold text-primary">Images</h6>
+                                    <div class="dropdown no-arrow">
+                                        <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
+                                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+                                        </a>
+                                        <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
+                                            aria-labelledby="dropdownMenuLink">
+                                            
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Card Body -->
+                                <div class="card-body">
+                                    <table class="table">
+                                        <thead class="thead-dark">
+                                          <tr>
+                                            <th scope="col">#</th>
+                                            <th scope="col">REPOSITORY:TAG</th>
+                                            <th scope="col">IMAGE ID</th>
+                                            <th scope="col">SIZE</th>
+                                          </tr>
+                                        </thead>
+                                        <tbody>
+                                          {% for i in images %}
+                                            <tr>
+                                                <th scope="row">{{i.num}}</th>
+                                                <td>{{i.name}}</td>
+                                                <td>{{i.id}}</td>
+                                                <td>{{i.size}}</td>
+                                            </tr>
+                                          {% endfor %}
+                                          
+                                        </tbody>
+                                      </table>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Content Row -->
+                    <div class="row">
+
+                        <!-- Content Column -->
+                        <div class="col-lg-6 mb-4">
+
+                            <!-- Project Card Example -->
+                            <div class="card shadow mb-4">
+                                <div class="card-header py-3">
+                                    <h6 class="m-0 font-weight-bold text-primary">Containers</h6>
+                                </div>
+                                <div class="card-body">
+                                    <table class="table">
+                                        <caption>List of containers</caption>
+                                        <thead>
+                                          <tr>  
+                                            <th scope="col">#</th>
+                                            <th scope="col">Name</th>
+                                            <th scope="col">Image</th>
+                                            <th scope="col">Port(Rport:Lport)</th>
+                                            <th scope="col">Protocol</th>
+                                          </tr>
+                                        </thead>
+                                        <tbody>
+                                          {% for i in con %}
+                                            <tr>
+                                                <th scope="row">{{i.num}}</th>
+                                                <td>{{i.name}}</td>
+                                                <td>{{i.image}}</td>
+                                                <td>{{i.port}}</td>
+                                                <td>{{i.pro}}</td>
+                                            </tr>
+                                          {% endfor %}
+                                        </tbody>
+                                      </table>
+                                    
+                                </div>
+                            </div>
+
+                            <!-- Color System -->
+                            <div class="row">
+                                
+                            </div>
+                            <div class="card shadow mb-4">
+                                <div class="card-header py-3">
+                                    <h6 class="m-0 font-weight-bold text-primary">Remove Challange/Image</h6>
+                                </div>
+                                <div class="card-body">
+                                    <form method="post" action="/remove">
+                                        <div class="form-group">
+                                          <label for="exampleInputEmail1">Challange Name</label>
+                                          <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="container name" name="name">
+                                          <small id="emailHelp" class="form-text text-muted text">remove challange</small>
+                                        </div>
+                                        <div class="form-check">
+                                            <input type="checkbox" class="form-check-input" id="kill" name="all">
+                                            <label class="form-check-label" for="exampleCheck1">Remove Image</label>
+                                        </div>
+                                        <br>
+                                        <button type="submit" class="btn btn-danger">Remove</button>
+                                      </form>
+                                </div>
+                            </div>
+
+
+                        </div>
+
+
+
+                        <div class="col-lg-6 mb-4">
+
+                            <!-- Illustrations -->
+                            <div class="card shadow mb-4">
+                                <div class="card-header py-3">
+                                    <h6 class="m-0 font-weight-bold text-primary">New Challange</h6>
+                                </div>
+                                <div class="card-body">
+                                    <form method="post" action="/new_challange" enctype="multipart/form-data">
+                                        <div class="form-group">
+                                          <label for="exampleInputEmail1">ChallangeID</label>
+                                          <input type="text" class="form-control" id="exampleInputEmail1" name="id" aria-describedby="emailHelp" placeholder="Enter challange id">
+                                          <small id="emailHelp" class="form-text text-muted">ChallangeId such as /challange/{ChallangeId}</small>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="exampleInputEmail1">ImageName</label>
+                                            <input type="text" class="form-control" id="exampleInputEmail1" name="name" aria-describedby="emailHelp" placeholder="Enter container name">
+                                            <small id="emailHelp" class="form-text text-muted">the image name on your server</small>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="exampleInputEmail1">Command</label>
+                                            <input type="text" class="form-control" id="exampleInputEmail1" name="command" aria-describedby="emailHelp" placeholder="Enter command to start container">
+                                            <small id="emailHelp" class="form-text text-muted">the command to start container</small>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="exampleInputEmail1">Discription</label>
+                                            <textarea class="form-control" id="discription" row="14" name="discription"></textarea>
+                                            <small id="emailHelp" class="form-text text-muted">the command to start container</small>
+                                        </div>
+                                        <div class="form-group">
+                                          <label for="exampleInputPassword1">LifeTime</label>
+                                          <input type="number" class="form-control" name="time" id="exampleInputPassword1" placeholder="Time">
+                                          <small id="emailHelp" class="form-text text-muted">enter time min</small>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="exampleInputPassword1">LPort(localport)</label>
+                                            <input type="number" class="form-control" id="exampleInputPassword1" name="port" placeholder="LPort">
+                                            <small id="emailHelp" class="form-text text-muted">enter local port</small>
+                                        </div> 
+                                        <button type="submit"  class="btn btn-primary">Create</button>
+                                      </form>
+                                </div>
+                            </div>
+
+                            <!-- Approach -->
+                            <div class="card shadow mb-4">
+                                <div class="card-header py-3">
+                                    <h6 class="m-0 font-weight-bold text-primary">Kill Container</h6>
+                                </div>
+                                <div class="card-body">
+                                    <form method="post" action="/kill_container">
+                                        <div class="form-group">
+                                          <label for="exampleInputEmail1">Container Name</label>
+                                          <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="container name" name="name">
+                                          <small id="emailHelp" class="form-text text-muted">kill with force switch container</small>
+                                        </div>
+                                        <div class="form-check">
+                                            <input type="checkbox" class="form-check-input" id="kill">
+                                            <label class="form-check-label" for="exampleCheck1">Kill all</label>
+                                        </div>
+                                        <br>
+                                        <button type="submit" class="btn btn-danger">Kill</button>
+                                      </form>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+                <!-- /.container-fluid -->
+
+            </div>
+            <!-- End of Main Content -->
+
+
+        </div>
+        <!-- End of Content Wrapper -->
+
+    </div>
+    <!-- End of Page Wrapper -->
+
+    <!-- Scroll to Top Button-->
+    <a class="scroll-to-top rounded" href="#page-top">
+        <i class="fas fa-angle-up"></i>
+    </a>
+
+    <!-- Logout Modal-->
+    <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
+                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+                    <a class="btn btn-primary" href="login.html">Logout</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap core JavaScript-->
+    <script src="static/vendor/jquery/jquery.min.js"></script>
+    <script src="https://cdn.canvasjs.com/canvasjs.min.js"></script>
+    <script>
+        //async function logMovies() {
+        //    const response = await fetch("http://localhost:5000/status");
+        //    const movies = await response.json();
+        //    return movies;
+        //}
+        var data = [];
+        var index = document.getElementById('select').value;
+        //var ctx = document.getElementById("myChart").getContext('2d');
+        /*var myLineChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+              labels: ["January", "February", "March", "April", "May", "June", "July"],
+              datasets: [{
+                label: "My First dataset",
+                data: [65, 59, 80, 81, 56, 55, 40],
+                backgroundColor: [
+                  'rgba(105, 0, 132, .2)',
+                ],
+                borderColor: [
+                  'rgba(200, 99, 132, .7)',
+                ],
+                borderWidth: 2
+              },
+              {
+                label: "My Second dataset",
+                data: [28, 48, 40, 19, 86, 27, 90],
+                backgroundColor: [
+                  'rgba(0, 137, 132, .2)',
+                ],
+                borderColor: [
+                  'rgba(0, 10, 130, .7)',
+                ],
+                borderWidth: 2
+              }
+              ]
+            },
+            options: {
+              responsive: true
+            }
+          });*/
+        var chart = new CanvasJS.Chart("myChart", {
+            title :{
+                text: "Dynamic Data"
+            },
+            data: [{
+                type: "line",
+                dataPoints: data
+            }]
+        });
+
+    var xVal = 0;
+    var yVal = 100; 
+    var updateInterval = 1000;
+    var dataLength = 20; // number of dataPoints visible at any point
+
+    var updateChart = function (count) {
+
+	    count = count || 1;
+
+	    for (var j = 0; j < count; j++) {
+            index = document.getElementById('select').value;
+            var status = logMovies();
+		    yVal = yVal +  Math.round(5 + Math.random() *(-5-5));
+            //for (var i = 0;i<status.length ; i++){
+            //    console.log(status[i])
+            //}
+		    data.push({
+			    x: xVal,
+			    y: yVal
+		    });
+		    xVal++;
+	    }
+
+	    if (data.length > dataLength) {
+		    data.shift();
+	    }
+
+	    chart.render();
+    };
+
+    updateChart(dataLength);
+    setInterval(function(){updateChart()}, updateInterval);
+
+
+</script>
+
+ 
+
+ 
+    <script src="static/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Core plugin JavaScript-->
+    <script src="static/vendor/jquery-easing/jquery.easing.min.js"></script>
+
+    <!-- Custom scripts for all pages-->
+    <script src="static/js/sb-admin-2.min.js"></script>
+
+    <!-- Page level plugins -->
+
+    <!-- Page level custom scripts -->
+
+</body>
+
+</html>

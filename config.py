@@ -1,0 +1,5 @@
+ADMIN_USERNAME="samimadmin"
+ADMIN_PASSWORD="adminadmin"
+BASE_URL="http://127.0.0.1:"
+RANGE_PORT=[1000,2000]
+LOG_FILE_PATH = "log.txt"
