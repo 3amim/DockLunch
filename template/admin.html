@@ -1,53 +1,58 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="">
     <meta name="author" content="">
-
     <title>SB Admin 2 - Dashboard</title>
-
-    <!-- Custom fonts for this template-->
     <link href="static/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
     <link
         href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
         rel="stylesheet">
-
-    <!-- Custom styles for this template-->
     <link href="static/css/sb-admin-2.min.css" rel="stylesheet">
-
 </head>
 
 <body id="page-top">
-
-    <!-- Page Wrapper -->
     <div id="wrapper">
-
-        <!-- Sidebar -->
-        
-        <!-- End of Sidebar -->
-
-        <!-- Content Wrapper -->
         <div id="content-wrapper" class="d-flex flex-column">
-
-            <!-- Main Content -->
             <div id="content">
-
-                <!-- Topbar -->
-
-                <!-- End of Topbar -->
-
-                <!-- Begin Page Content -->
                 <div class="container-fluid">
 
                     <!-- Page Heading -->
-                    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                    <div class="d-flex align-items-center mb-4 mt-3 justify-content-between">
                         <h1 class="h3 mb-0 text-gray-800">Dashboard</h1>
+                        <button type="button" data-toggle="modal" data-target="#exampleModal" class="h4 mb-0 justify-content-end btn btn-dark btn-circle"><i class="fas fa-cog"></i></button>
                     </div>
+                    <!-- modal page-->
+                    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                          <div class="modal-content">
+                            <div class="modal-header">
+                              <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                              </button>
+                            </div>
+                            <form action="/admin/change_genral_setting" method="post" >
+                              <div class="modal-body">
+                                <label for="exampleInputPassword1">limit container up</label>
+                                <input type="number" class="form-control" name="num_lim" id="exampleInputPassword1" placeholder="{{gs.num_lim}}" value="{{gs.num_lim}}">
+                                <label for="exampleInputPassword1">minimum time</label>
+                                <input type="number" class="form-control" name="min_time" value="{{gs.min_time}}" id="exampleInputPassword1" placeholder="{{gs.min_time}}">
+                                <br>
+                                <input type="checkbox" name="puse" value="true" {{gs.puse}}>
+                                <label for="puse">puse(remove all container)</label><br>
+                              </div>
+                              <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                <button type="submit" class="btn btn-primary">Save changes</button>
+                              </div>
+                          </form>
+                          </div>
+                        </div>
+                      </div>
                     <!-- Content Row -->
                     <div class="row">
 
@@ -139,26 +144,60 @@
                                     class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
                                     <h6 class="m-0 font-weight-bold text-primary">Containers Stats</h6>
                                     <div class="dropdown no-arrow">
-                                        <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
-                                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                        </a>
-                                        <div class="   animated--fade-in"
-                                            aria-labelledby="dropdownMenuLink">
-                                            <select class="form-select" aria-label="Default select example" id="select">
-                                                <option selected value="cpu">CPU</option>
-                                                <option value="memory">MEMORY</option>
-                                                <option value="net">NET I/O</option>
-                                              </select>
-                                        </div>
                                     </div>
                                 </div>
                                 <!-- Card Body -->
                                 <div class="card-body">
                                     <div class="chart-area">
-                                        <div id="myChart" style="height: 300px; width:100%;"></div>
+                                        <canvas id="myChart" style="height: 300px; width:100%;"></canvas>
                                     </div>
                                 </div>
                             </div>
+                            <div class="card shadow mb-4">
+                              <div class="card-header py-3">
+                                  <h6 class="m-0 font-weight-bold text-primary">Containers</h6>
+                              </div>
+                              <div class="card-body">
+                                  <table class="table">
+                                      <caption>List of containers</caption>
+                                      <thead>
+                                        <tr>  
+                                          <th scope="col">#</th>
+                                          <th scope="col">Name</th>
+                                          <th scope="col">Image</th>
+                                          <th scope="col">Port(Rport:Lport)</th>
+                                          <th scope="col">Protocol</th>
+                                          <th scope="col">Menu</th>
+                                        </tr>
+                                      </thead>
+                                      <tbody>
+                                        {% for i in con %}
+                                          <tr>
+                                              <th scope="row">{{i.num}}</th>
+                                              <td>{{i.name}}</td>
+                                              <td>{{i.image}}</td>
+                                              <td>{{i.port}}</td>
+                                              <td>{{i.pro}}</td>
+                                              <td><div class="dropdown no-arrow">
+                                                  <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
+                                                      data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                      <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-800"></i>
+                                                  </a>
+                                                  <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
+                                                      aria-labelledby="dropdownMenuLink">
+                                                      <a class="dropdown-item" href="/admin/inspect?name={{i.name}}" target="_blank">Inspect Container</a>
+                                                      <a type="button" data-toggle="modal" aria-haspopup="true" id="get_log" data-id="{{i.name}}" aria-expanded="false" data-target="#ContainerLogs" class="dropdown-item logs" href="#">Container Logs</a>
+                                                      <a type="button" data-toggle="modal" aria-haspopup="true" id="run_command" data-id="{{i.name}}" aria-expanded="false" data-target="#RunCommand" class="dropdown-item cmd" href="#">Run Command</a>
+                                                      <a class="dropdown-item" href="/admin/kill_container?name={{i.name}}">Kill Container</a>
+                                                  </div>
+                                              </div></td>
+                                          </tr>
+                                        {% endfor %}
+                                      </tbody>
+                                    </table>
+                                  
+                              </div>
+                          </div>
                         </div>
 
                         <!-- Pie Chart -->
@@ -188,15 +227,166 @@
                                             <th scope="col">REPOSITORY:TAG</th>
                                             <th scope="col">IMAGE ID</th>
                                             <th scope="col">SIZE</th>
+                                            <th scope="col">DEL</th>
                                           </tr>
                                         </thead>
                                         <tbody>
-                                          {% for i in images %}
+                                          {% for image in images %}
                                             <tr>
-                                                <th scope="row">{{i.num}}</th>
-                                                <td>{{i.name}}</td>
-                                                <td>{{i.id}}</td>
-                                                <td>{{i.size}}</td>
+                                                <th scope="row">{{image.num}}</th>
+                                                <td>{{image.name}}</td>
+                                                <td>{{image.id}}</td>
+                                                <td>{{image.size/1000}}Kb</td>
+                                                <td><a onclick="return confirm('You sure to DELETE this docker image?');" href="/admin/remove_image?name={{image.name}}" class="btn btn-danger btn-circle btn-sm"><i class="fas fa-trash"></i></a></td>
+                                            </tr>
+                                          {% endfor %}
+                                          
+                                        </tbody>
+                                      </table>
+                                        <form class="row mt-3 px-3" method="" action="/admin/pull">
+                                            <input type="text" class="col mr-2 form-control" name="name">
+                                            <button type="submit" class="col-3 btn btn-outline-success">pull</button>
+                                        </form>
+                                </div>
+                            </div>
+                            <div class="card shadow mb-4">
+                                <!-- Card Header - Dropdown -->
+                                <div
+                                    class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                                    <h6 class="m-0 font-weight-bold text-primary">Challanges</h6>
+                                    <div class="dropdown no-arrow">
+                                        <button class="dropdown-toggle btn btn-outline-info" type="button"
+                                            data-toggle="modal" aria-haspopup="true" aria-expanded="false" data-target="#NewChallange">
+                                            <i class="fas fa-plus fa-sm fa-fw "></i>
+                                        </button>
+                                        <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
+                                            aria-labelledby="dropdownMenuLink">
+                                            
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal fade" id="NewChallange" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog" role="document">
+                                      <div class="modal-content">
+                                        <div class="modal-header">
+                                          <h5 class="modal-title" id="exampleModalLabel">Add Challange</h5>
+                                          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                          </button>
+                                        </div>
+                                        <form method="post" action="/admin/new_challange" enctype="multipart/form-data">
+                                        <div class="modal-body">
+                                                <div class="form-group">
+                                                  <label for="exampleInputEmail1">ChallangeID</label>
+                                                  <input type="text" class="form-control" id="exampleInputEmail1" name="id" aria-describedby="emailHelp" placeholder="Enter challange id">
+                                                  <small id="emailHelp" class="form-text text-muted">ChallangeId such as /challange/{ChallangeId}</small>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="exampleInputEmail1">ImageName</label>
+                                                    <input type="text" class="form-control" id="exampleInputEmail1" name="name" aria-describedby="emailHelp" placeholder="Enter container name">
+                                                    <small id="emailHelp" class="form-text text-muted">the image name on your server</small>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="exampleInputEmail1">Command</label>
+                                                    <input type="text" class="form-control" id="exampleInputEmail1" name="command" aria-describedby="emailHelp" placeholder="Enter command to start container">
+                                                    <small id="emailHelp" class="form-text text-muted">the command to start container</small>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="exampleInputEmail1">Discription</label>
+                                                    <textarea class="form-control" id="discription" row="14" name="discription"></textarea>
+                                                    <small id="emailHelp" class="form-text text-muted">Challange Discription</small>
+                                                </div>
+                                                <div class="form-group">
+                                                  <label for="exampleInputPassword1">LifeTime</label>
+                                                  <input type="number" class="form-control" name="time" id="exampleInputPassword1" placeholder="Time">
+                                                  <small id="emailHelp" class="form-text text-muted">enter time min</small>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="exampleInputPassword1">LPort(localport)</label>
+                                                    <input type="number" class="form-control" id="exampleInputPassword1" name="port" placeholder="LPort">
+                                                    <small id="emailHelp" class="form-text text-muted">enter local port</small>
+                                                </div> 
+                                        </div>
+                                        <div class="modal-footer">
+                                          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                          <button type="submit" class="btn btn-success">Create</button>
+                                        </div>
+                                    </form>
+
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div class="modal fade" id="ChangeChallange" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog" role="document">
+                                      <div class="modal-content">
+                                        <div class="modal-header">
+                                          <h5 class="modal-title" id="exampleModalLabel">Change Challange</h5>
+                                          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                          </button>
+                                        </div>
+                                        <form method="post" action="/admin/change_challange?" id="change_challange_form" enctype="multipart/form-data">
+                                        <div class="modal-body">
+                                                <div class="form-group">
+                                                  <label for="exampleInputEmail1">ChallangeID</label>
+                                                  <input type="text" class="form-control" id="id" name="id" aria-describedby="emailHelp" placeholder="Enter challange id" value="#">
+                                                  <small id="emailHelp" class="form-text text-muted">ChallangeId such as /challange/{ChallangeId}</small>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="exampleInputEmail1">ImageName</label>
+                                                    <input type="text" class="form-control" id="img-name" name="name" aria-describedby="emailHelp" placeholder="Enter container name" value="#">
+                                                    <small id="emailHelp" class="form-text text-muted">the image name on your server</small>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="exampleInputEmail1">Command</label>
+                                                    <input type="text" class="form-control" id="chcommand" name="command" aria-describedby="emailHelp" placeholder="Enter command to start container" value="#">
+                                                    <small id="emailHelp" class="form-text text-muted">the command to start container</small>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="exampleInputEmail1">Discription</label>
+                                                    <textarea class="form-control" id="dis" row="14" name="discription" aria-valuetext="#"></textarea>
+                                                    <small id="emailHelp" class="form-text text-muted">Challange Discription</small>
+                                                </div>
+                                                <div class="form-group">
+                                                  <label for="exampleInputPassword1">LifeTime</label>
+                                                  <input type="number" class="form-control" name="time" id="chtime" placeholder="Time" value="1">
+                                                  <small id="emailHelp" class="form-text text-muted">enter time min</small>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="exampleInputPassword1">LPort(localport)</label>
+                                                    <input type="number" class="form-control" id="local-port" name="port" placeholder="LPort" value="1">
+                                                    <small id="emailHelp" class="form-text text-muted">enter local port</small>
+                                                </div> 
+                                        </div>
+                                        <div class="modal-footer">
+                                          <a href="#" id="delete-challange" class="btn btn-danger">Delete</a>
+                                          <button type="submit" class="btn btn-success">Update</button>
+                                        </div>
+                                    </form>
+
+                                      </div>
+                                    </div>
+                                  </div>
+                                <!-- Card Body -->
+                                <div class="card-body">
+                                    <table class="table">
+                                        <thead class="thead-dark">
+                                          <tr>
+                                            <th scope="col">Name(id)</th>
+                                            <th scope="col">ImageName</th>
+                                            <th scope="col">LifeTime</th>
+                                            <th scope="col">Lport</th>
+                                            <th scope="col">Edit</th>
+                                          </tr>
+                                        </thead>
+                                        <tbody>
+                                          {% for challange in challanges %}
+                                            <tr>
+                                                <th scope="row">{{challange.id}}</th>
+                                                <td>{{challange.name}}</td>
+                                                <td>{{challange.time/60}}</td>
+                                                <td>{{challange.port}}</td>
+                                                <td><a href="#" data-toggle="modal" type="button" id="update-{{challange.id}}" name="upload" data-id="{{challange.id}}" aria-haspopup="true" aria-expanded="false" data-target="#ChangeChallange" class="btn btn-info btn-circle btn-sm update"><i class="fas fa-pen"></i></a></td>
                                             </tr>
                                           {% endfor %}
                                           
@@ -215,135 +405,20 @@
                         <div class="col-lg-6 mb-4">
 
                             <!-- Project Card Example -->
-                            <div class="card shadow mb-4">
-                                <div class="card-header py-3">
-                                    <h6 class="m-0 font-weight-bold text-primary">Containers</h6>
-                                </div>
-                                <div class="card-body">
-                                    <table class="table">
-                                        <caption>List of containers</caption>
-                                        <thead>
-                                          <tr>  
-                                            <th scope="col">#</th>
-                                            <th scope="col">Name</th>
-                                            <th scope="col">Image</th>
-                                            <th scope="col">Port(Rport:Lport)</th>
-                                            <th scope="col">Protocol</th>
-                                          </tr>
-                                        </thead>
-                                        <tbody>
-                                          {% for i in con %}
-                                            <tr>
-                                                <th scope="row">{{i.num}}</th>
-                                                <td>{{i.name}}</td>
-                                                <td>{{i.image}}</td>
-                                                <td>{{i.port}}</td>
-                                                <td>{{i.pro}}</td>
-                                            </tr>
-                                          {% endfor %}
-                                        </tbody>
-                                      </table>
-                                    
-                                </div>
-                            </div>
-
                             <!-- Color System -->
-                            <div class="row">
-                                
-                            </div>
-                            <div class="card shadow mb-4">
-                                <div class="card-header py-3">
-                                    <h6 class="m-0 font-weight-bold text-primary">Remove Challange/Image</h6>
-                                </div>
-                                <div class="card-body">
-                                    <form method="post" action="/remove">
-                                        <div class="form-group">
-                                          <label for="exampleInputEmail1">Challange Name</label>
-                                          <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="container name" name="name">
-                                          <small id="emailHelp" class="form-text text-muted text">remove challange</small>
-                                        </div>
-                                        <div class="form-check">
-                                            <input type="checkbox" class="form-check-input" id="kill" name="all">
-                                            <label class="form-check-label" for="exampleCheck1">Remove Image</label>
-                                        </div>
-                                        <br>
-                                        <button type="submit" class="btn btn-danger">Remove</button>
-                                      </form>
-                                </div>
-                            </div>
-
 
                         </div>
 
 
 
-                        <div class="col-lg-6 mb-4">
+                        <!-- <div class="col-lg-6 mb-4">
 
-                            <!-- Illustrations -->
-                            <div class="card shadow mb-4">
-                                <div class="card-header py-3">
-                                    <h6 class="m-0 font-weight-bold text-primary">New Challange</h6>
-                                </div>
-                                <div class="card-body">
-                                    <form method="post" action="/new_challange" enctype="multipart/form-data">
-                                        <div class="form-group">
-                                          <label for="exampleInputEmail1">ChallangeID</label>
-                                          <input type="text" class="form-control" id="exampleInputEmail1" name="id" aria-describedby="emailHelp" placeholder="Enter challange id">
-                                          <small id="emailHelp" class="form-text text-muted">ChallangeId such as /challange/{ChallangeId}</small>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="exampleInputEmail1">ImageName</label>
-                                            <input type="text" class="form-control" id="exampleInputEmail1" name="name" aria-describedby="emailHelp" placeholder="Enter container name">
-                                            <small id="emailHelp" class="form-text text-muted">the image name on your server</small>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="exampleInputEmail1">Command</label>
-                                            <input type="text" class="form-control" id="exampleInputEmail1" name="command" aria-describedby="emailHelp" placeholder="Enter command to start container">
-                                            <small id="emailHelp" class="form-text text-muted">the command to start container</small>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="exampleInputEmail1">Discription</label>
-                                            <textarea class="form-control" id="discription" row="14" name="discription"></textarea>
-                                            <small id="emailHelp" class="form-text text-muted">the command to start container</small>
-                                        </div>
-                                        <div class="form-group">
-                                          <label for="exampleInputPassword1">LifeTime</label>
-                                          <input type="number" class="form-control" name="time" id="exampleInputPassword1" placeholder="Time">
-                                          <small id="emailHelp" class="form-text text-muted">enter time min</small>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="exampleInputPassword1">LPort(localport)</label>
-                                            <input type="number" class="form-control" id="exampleInputPassword1" name="port" placeholder="LPort">
-                                            <small id="emailHelp" class="form-text text-muted">enter local port</small>
-                                        </div> 
-                                        <button type="submit"  class="btn btn-primary">Create</button>
-                                      </form>
-                                </div>
-                            </div>
+                             Illustrations
 
-                            <!-- Approach -->
-                            <div class="card shadow mb-4">
-                                <div class="card-header py-3">
-                                    <h6 class="m-0 font-weight-bold text-primary">Kill Container</h6>
-                                </div>
-                                <div class="card-body">
-                                    <form method="post" action="/kill_container">
-                                        <div class="form-group">
-                                          <label for="exampleInputEmail1">Container Name</label>
-                                          <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="container name" name="name">
-                                          <small id="emailHelp" class="form-text text-muted">kill with force switch container</small>
-                                        </div>
-                                        <div class="form-check">
-                                            <input type="checkbox" class="form-check-input" id="kill">
-                                            <label class="form-check-label" for="exampleCheck1">Kill all</label>
-                                        </div>
-                                        <br>
-                                        <button type="submit" class="btn btn-danger">Kill</button>
-                                      </form>
-                                </div>
-                            </div>
+                            Approach 
+                            
 
-                        </div>
+                        </div> -->
                     </div>
 
                 </div>
@@ -354,17 +429,11 @@
 
 
         </div>
-        <!-- End of Content Wrapper -->
-
     </div>
-    <!-- End of Page Wrapper -->
 
-    <!-- Scroll to Top Button-->
     <a class="scroll-to-top rounded" href="#page-top">
         <i class="fas fa-angle-up"></i>
     </a>
-
-    <!-- Logout Modal-->
     <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
         aria-hidden="true">
         <div class="modal-dialog" role="document">
@@ -383,100 +452,163 @@
             </div>
         </div>
     </div>
-
+    <div class="modal fade" id="ContainerLogs" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">Container Logs</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body" id="Logs">
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+    </div>
+    <div class="modal fade" id="RunCommand" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Run Command</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body" id="Command">
+            <div>
+              <label for="exampleInputEmail1">Enter Command</label>
+              <textarea class="form-control" id="command" row="14" name="command"></textarea>
+            </div>
+            <div id="response">
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary" id="run">Run</button>
+          </div>
+        </div>
+      </div>
+  </div>
     <!-- Bootstrap core JavaScript-->
     <script src="static/vendor/jquery/jquery.min.js"></script>
-    <script src="https://cdn.canvasjs.com/canvasjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
+    <script >
+      $(".update").click( function () {
+        const id = $(this).data('id');
+        console.log(id);
+        const url =  document.baseURI + "/change_challange?id=" + id;
+        fetch(url)
+          .then(response => response.json())
+            .then(data => {
+              console.log(data);
+              document.getElementById('change_challange_form').setAttribute("action",url);
+              document.getElementById('id').value=data["id"];
+              document.getElementById('img-name').value=data["name"];
+              document.getElementById('chtime').value=data["time"];
+              document.getElementById('local-port').value=data["port"];
+              document.getElementById('chcommand').value=data["command"];
+              document.getElementById('dis').value=data["dis"];
+              document.getElementById('delete-challange').setAttribute('href',"/admin/remove_challange?id="+id);
+            })
+            .catch(error => {
+            console.error("Error fetching data:", error);
+            responseDiv.innerHTML = "Error: Unable to fetch data.";
+            });
+      })
+    </script>
+    <script type="text/javascript">
+      $(".logs").click(function () {
+        const name = $(this).data('id');
+        const logurl = document.baseURI + "/container_logs?name=" + name;
+        const responseDiv = document.getElementById("Logs");
+        fetch(logurl)
+          .then(response => response.text())
+            .then(text => {
+              responseDiv.innerHTML = text;
+            })
+            .catch(error => {
+            console.error("Error fetching data:", error);
+            responseDiv.innerHTML = "Error: Unable to fetch data.";
+            });
+      });
+  </script>
+  <script type="text/javascript">
+    $(".cmd").click(function () {
+      const name = $(this).data('id');
+      console.log(name);
+      $("#run").click(function ()  {
+        const run_command = $("#command").val();
+        const logurl = document.baseURI + "/run_command?name=" + name;
+        console.log(logurl);
+        const responseDiv = document.getElementById("response");
+        fetch(logurl,{
+          method: "POST",
+          body: JSON.stringify({
+            command:run_command,
+          }),
+          headers: {
+            "Content-type": "application/json; charset=UTF-8"
+          }
+        })
+        .then(response => response.text())
+          .then(text => {
+            responseDiv.innerHTML = text;
+          })
+          .catch(error => {
+          console.error("Error fetching data:", error);
+          responseDiv.innerHTML = "Error: Unable to fetch data.";
+          });
+      });
+      
+    });
+</script>
     <script>
-        //async function logMovies() {
-        //    const response = await fetch("http://localhost:5000/status");
-        //    const movies = await response.json();
-        //    return movies;
-        //}
-        var data = [];
-        var index = document.getElementById('select').value;
-        //var ctx = document.getElementById("myChart").getContext('2d');
-        /*var myLineChart = new Chart(ctx, {
-            type: 'line',
-            data: {
-              labels: ["January", "February", "March", "April", "May", "June", "July"],
-              datasets: [{
-                label: "My First dataset",
-                data: [65, 59, 80, 81, 56, 55, 40],
-                backgroundColor: [
-                  'rgba(105, 0, 132, .2)',
-                ],
-                borderColor: [
-                  'rgba(200, 99, 132, .7)',
-                ],
-                borderWidth: 2
-              },
-              {
-                label: "My Second dataset",
-                data: [28, 48, 40, 19, 86, 27, 90],
-                backgroundColor: [
-                  'rgba(0, 137, 132, .2)',
-                ],
-                borderColor: [
-                  'rgba(0, 10, 130, .7)',
-                ],
-                borderWidth: 2
+        const url = document.baseURI + "/statistic";
+
+        function getData(url) {
+          return fetch(url)
+            .then(response => response.json())
+            .then(data => {
+              const yValues = [];
+              const xValues = [];
+              for (const key in data) {
+                xValues.push(key);
+                yValues.push(data[key]);
               }
-              ]
+              return [xValues, yValues];
+            })
+            .catch(error => console.error(error));
+        }
+
+          getData(url).then(data => {
+          var barColors = ["red", "green","blue","orange","brown"];
+          new Chart("myChart", {
+            type: "bar",
+            data: {
+              labels: data[0],
+              datasets: [{
+                backgroundColor: barColors,
+                data: data[1]
+              }]
             },
             options: {
-              responsive: true
-            }
-          });*/
-        var chart = new CanvasJS.Chart("myChart", {
-            title :{
-                text: "Dynamic Data"
+              legend: { display: false },
+              scales: {
+                yAxes: [{
+                  ticks: {
+                    min: 0,
+                  },
+                }],
+              },
             },
-            data: [{
-                type: "line",
-                dataPoints: data
-            }]
+    
+          });
         });
-
-    var xVal = 0;
-    var yVal = 100; 
-    var updateInterval = 1000;
-    var dataLength = 20; // number of dataPoints visible at any point
-
-    var updateChart = function (count) {
-
-	    count = count || 1;
-
-	    for (var j = 0; j < count; j++) {
-            index = document.getElementById('select').value;
-            var status = logMovies();
-		    yVal = yVal +  Math.round(5 + Math.random() *(-5-5));
-            //for (var i = 0;i<status.length ; i++){
-            //    console.log(status[i])
-            //}
-		    data.push({
-			    x: xVal,
-			    y: yVal
-		    });
-		    xVal++;
-	    }
-
-	    if (data.length > dataLength) {
-		    data.shift();
-	    }
-
-	    chart.render();
-    };
-
-    updateChart(dataLength);
-    setInterval(function(){updateChart()}, updateInterval);
-
-
-</script>
-
- 
-
- 
+      </script>
     <script src="static/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 
     <!-- Core plugin JavaScript-->

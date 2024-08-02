@@ -1,4 +1,4 @@
-from flask import Flask , render_template , request , redirect 
+from flask import Flask , render_template , request , redirect , jsonify
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from datetime import datetime , date
@@ -10,7 +10,11 @@ import time
 import sqlite3
 import config
 import socket
+
 #------------------------------(config app)-----------------------------------------
+
+
+
 
 
 app = Flask(__name__ , template_folder='./template',static_folder='./template/static')
@@ -21,10 +25,10 @@ client = docker.from_env()
 num = 0
 lunches = 0
 kills = 0
+info = {}
 users = {config.ADMIN_USERNAME: {'password': config.ADMIN_PASSWORD}}
 class User(flask_login.UserMixin):
     pass
-challanges = {}
 
 #------------------------------(config login)--------------------------------------
 
@@ -56,6 +60,20 @@ def unauthorized_handler():
 
 #------------------------------(any function)--------------------------------------
 
+
+class GeneralSetting():
+    def __init__(self,limit_number,minimum_time,puse=False):
+        self.limit_number = limit_number
+        self.minimum_time = minimum_time
+        self.puse = puse
+    def format(self):
+        data = {"num_lim":self.limit_number , "min_time":self.minimum_time , "puse": ""}
+        if self.puse:
+            data['puse'] = "checked"
+        return data
+        
+    
+general_setting = GeneralSetting(0,0)
 
 
 
@@ -106,18 +124,21 @@ def get_images():
 
 def get_challanges():
     data_struct = ['id','name','time','port','command','dis']
-    conection = sqlite3.connect("challanges.db")
-    courser = conection.cursor()
-    courser.execute(f"""SELECT * FROM challanges;""")
-    data = courser.fetchall()
-    conection.close()
-    data_pars = {}
-    for d in data:
-        const = d[0]
-        iter = data_pars[const] = {}
-        for i in range(6):
-            iter[data_struct[i]] = d[i]
-    return data_pars
+    try :
+        conection = sqlite3.connect("challanges.db")
+        courser = conection.cursor()
+        courser.execute(f"""SELECT * FROM challanges;""")
+        data = courser.fetchall()
+        conection.close()
+        data_pars = {}
+        for d in data:
+            const = d[0]
+            iter = data_pars[const] = {}
+            for i in range(6):
+                iter[data_struct[i]] = d[i]
+        return data_pars
+    except :
+        return {}
 
 
 
@@ -148,9 +169,16 @@ def log(action):
     data = f"[{current_time}]   [{formatted_date}]   {action}\n"
     log_file.write(data)
     log_file.close()
-    
 
-    
+
+def remove_all_container():
+    global client
+    global kills
+    containers = client.containers.list()
+    for container in containers:
+        container.stop()
+        container.remove()
+        kills+=1
 
 
 
@@ -199,11 +227,22 @@ def login():
 @app.route("/admin",methods=['GET',"POST"])
 @flask_login.login_required
 def admin_page():
+    global general_setting
+    if general_setting.puse:
+        t2 = threading.Thread(target=remove_all_container)
+        t2.start()
     images = get_images()
     containers = get_containers()
-    return render_template("admin.html",info={'total':len(images),'up':len(containers),'lunch':lunches,'kills':kills},images=images,con=containers)
+    challanges = get_challanges()
+    challanges_list = []
+    for challange in challanges:
+        challanges_list.append(challanges[challange])
+    images_name = []
+    for i in images:
+        images_name.append(i['name'])
+    return render_template("admin.html",info={'total':len(images),'up':len(containers),'lunch':lunches,'kills':kills},images=images,con=containers,challanges=challanges_list,gs=general_setting.format())
 
-@app.route("/new_challange",methods=["POST"])
+@app.route("/admin/new_challange",methods=["POST"])
 @limiter.limit("3/minute",override_defaults=False)
 @flask_login.login_required
 def new_challange():
@@ -240,17 +279,26 @@ def main(id:str):
     global client
     global lunches
     global challanges
+    global info
+    global general_setting
     challanges = get_challanges()
     if request.method == "GET":
         return render_template("index.html",e = "")
     else :
         if check_challange(id):
+            if len(get_containers()) >= general_setting.limit_number and general_setting.limit_number != 0:
+                error = {"status":"TOO MANY CONTAINERS UP","text":"please try another time"}
+                return render_template("error.html",error=error)
+            if general_setting.puse:
+                error = {"status":"CHALLANGES IS STOP","text":""}
+                return render_template("error.html",error=error)
             server_port = find_port()
-            cantainer=client.containers.run(challanges[id]['name'],challanges[id]['command'],ports={int(challanges[id]['port']):server_port},detach=True,stdout=False)
+            challange = challanges[id]
+            cantainer=client.containers.run(challange['name'],challange['command'],ports={int(challange['port']):server_port},detach=True,stdout=False)
             url = config.BASE_URL + str(server_port)
-            data = {"name":challanges[id]['name'],"server":url,"time":int(challanges[id]['time']),'dis':challanges[id]['dis']}
-
-            tim= int(challanges[id]['time'])
+            data = {"name":challanges[id]['name'],"server":url,"time":int(challange['time']),'dis':challange['dis']}
+            info[challange['id']] += 1
+            tim= int(challange['time'])
             t2 = threading.Thread(target=handel_container,args=(cantainer,tim,server_port))
             t2.start()
             log(f"CREATING NEW CONTAINER ContainerName:{cantainer.name}")
@@ -259,31 +307,76 @@ def main(id:str):
         else:
             return render_template("index.html" , e ="faild id challange")
 
-@app.route("/remove",methods=["POST"])
+@app.route("/admin/remove_image")
 @flask_login.login_required
-def remove_container():
-    all = request.form.get('all')
-    name = request.form.get('name')
-    conection = sqlite3.connect("challanges.db")
-    courser = conection.cursor()
-    courser.execute(f"""DELETE FROM challanges WHERE name='{name}';""")
-    conection.commit()
-    conection.close()
-    if all != None :
-        client.images.remove(image=name,force=True)
-        log(f"REMOVING CHALLANGE FROM DATABSE AND REMOVING IMAGE ChallangeName&ImageName:{name}")
-    else:
-        log(f"REMOVING CHALLANGE FROM DATABSE ChallangeName:{name}")
+def remove_image():
+    name = request.args['name']
+    client.images.remove(image=name,force=True)
+    log(f"REMOVING IMAGE ImageName:{name}")
     return redirect("/admin")
 
+@app.route("/admin/remove_challange")
+@flask_login.login_required
+def remove_challange():
+    id = request.args['id']
+    try:
+        conection = sqlite3.connect("challanges.db")
+        courser = conection.cursor()
+        query = f"""DELETE FROM challanges WHERE id = '{id}';"""
+        courser.execute(query)
+        conection.commit()
+        conection.close()
+        log(f"REMOVING CHALLANGE FROM DATABSE Challange id={id}")
+        return redirect("/admin")
+    except sqlite3.Error as e:
+        print(e)
+        return redirect("/admin")
     
+@app.route("/admin/inspect")
+@flask_login.login_required
+def inspect():
+    global client
+    if "name" in request.args:
+        try:
+            name = request.args['name']
+            container = client.containers.get(name)
+            return jsonify(container.attrs)
+        except:
+            error = {"status":"container not found","text":""}
+            return render_template("error.html",error=error)
+    else:
+        return redirect("/admin")
+@app.route("/admin/container_logs")
+@flask_login.login_required
+def get_container_logs():
+    global client
+    if "name" in request.args:
+        try:
+            name = request.args['name']
+            container = client.containers.get(name)
+            return container.logs().decode()
+        except:
+            return "Container is not Live"
+    else:
+        return ""
     
-
-@app.route("/kill_container",methods=["POST"])
+@app.route("/admin/run_command" , methods=['POST'])
+@flask_login.login_required
+def exec_command():
+    try:
+        container_name = request.args['name']
+        conatiner = client.containers.get(container_name)
+        command = request.get_json()['command']
+        response = conatiner.exec_run(command).output
+        return response.decode()
+    except:
+        return "ERROR: this requests is not OK!!!"
+    
+@app.route("/admin/kill_container")
 @flask_login.login_required
 def kill_container():
     global kills
-    container_name = request.form['name']
+    container_name = request.args['name']
     container = client.containers.get(container_name)
     container.stop()
     container.remove()
@@ -291,7 +384,39 @@ def kill_container():
     log(f"KILL CONTAINER BY Admin panel ContainerName:{container_name}")
     return redirect('/admin')
 
-@app.route("/status")
+@app.route("/admin/statistic")
+@flask_login.login_required
+def statistic():
+    global info
+    challanges = get_challanges()
+    for id in challanges:
+        challange_name = challanges[id]['id']
+        if challange_name not in info.keys():
+            info[challange_name] = 0
+    return jsonify(info)
+
+
+@app.route("/admin/change_challange",methods=['GET',"POST"])
+@flask_login.login_required
+def change_challange():
+    id = request.args['id']
+    challanges = get_challanges()
+    if id in challanges:
+        if request.method == "POST":
+            conection = sqlite3.connect("challanges.db")
+            courser = conection.cursor()
+            post_argument = request.form        
+            courser.execute(f"""UPDATE challanges SET name='{post_argument['name']}', life_time={post_argument['time']} , port={post_argument['port']} ,command='{post_argument['command']}', dis='{post_argument['discription']}' WHERE id='{id}';""")
+            conection.commit()
+            conection.close()
+            return redirect("/admin")
+        else:
+            return jsonify(challanges[id])
+    else:
+        error = {"status":"error","message":"challange is not define"}
+        return jsonify(error)
+
+@app.route("/admin/status")
 def status():
     data = {}
     containers = client.containers.list()
@@ -304,7 +429,28 @@ def status():
         data[name]={"cpu":cpu,"memory":memory,"net":network}
     return data
 
-
+@app.route("/admin/pull")
+@flask_login.login_required
+def pull_image():
+    global client
+    name = request.args['name']
+    t1 = threading.Thread(target=client.images.pull,args=(name,))
+    t1.start()
+    log(f"START PULL IMAGE ImageName={name}")
+    return redirect("/admin")
+@app.route("/admin/change_genral_setting",methods=["POST"])
+@flask_login.login_required
+def change_login_required():
+    global general_setting
+    general_setting.limit_number = int(request.form['num_lim'])
+    general_setting.minimum_time = int(request.form['min_time'])
+    if "puse" in request.form:
+        general_setting.puse = True
+    else:
+        general_setting.puse = False
+    return redirect("/admin")
+    
+    
 
 @app.route('/logout')
 def logout():
